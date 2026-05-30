@@ -1,112 +1,106 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useInView } from "framer-motion";
-import { staggerContainer, staggerItem } from "@/lib/animations";
+import { useEffect, useState, useRef, CSSProperties } from "react";
 
 const stats = [
-  {
-    value: 99.9,
-    suffix: "%",
-    label: "Uptime SLA",
-    description: "Enterprise-ready infrastructure",
-  },
-  {
-    value: 50,
-    suffix: "ms",
-    label: "Transaction Speed",
-    description: "Blockchain-secured transactions",
-  },
-  {
-    value: 12,
-    suffix: "+",
-    label: "Industries Served",
-    description: "Multi-industry adaptability",
-  },
-  {
-    value: 100,
-    suffix: "%",
-    label: "White-Label Ready",
-    description: "Full brand customization",
-  },
+  { value: 99.9, suffix: "%", label: "Uptime SLA", desc: "Enterprise-ready infrastructure" },
+  { value: 50, suffix: "ms", label: "Transaction Speed", desc: "Blockchain-secured transactions" },
+  { value: 12, suffix: "+", label: "Industries Served", desc: "Multi-industry adaptability" },
+  { value: 100, suffix: "%", label: "White-Label Ready", desc: "Full brand customization" },
 ];
 
-function AnimatedCounter({
-  value,
-  suffix,
-  isInView,
-}: {
-  value: number;
-  suffix: string;
-  isInView: boolean;
-}) {
+function Counter({ value, suffix }: { value: number; suffix: string }) {
   const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const started = useRef(false);
 
   useEffect(() => {
-    if (!isInView) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true;
+          let start = 0;
+          const dur = 1800;
+          const inc = value / (dur / 16);
+          const timer = setInterval(() => {
+            start += inc;
+            if (start >= value) { setCount(value); clearInterval(timer); }
+            else setCount(Math.floor(start * 10) / 10);
+          }, 16);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [value]);
 
-    let start = 0;
-    const duration = 2000;
-    const increment = value / (duration / 16);
-
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= value) {
-        setCount(value);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start * 10) / 10);
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
-  }, [isInView, value]);
+  const formatted = value % 1 !== 0 ? count.toFixed(1) : Math.floor(count).toString();
 
   return (
-    <span className="font-[family-name:var(--font-space-grotesk)] text-5xl md:text-6xl font-bold gradient-text glow-text-cyan">
-      {value % 1 !== 0 ? count.toFixed(1) : Math.floor(count)}
-      {suffix}
-    </span>
+    <div ref={ref} style={{ fontFamily: "var(--font-heading)", fontSize: "clamp(32px, 4vw, 44px)", fontWeight: 800, color: "var(--accent)" }}>
+      {formatted}{suffix}
+    </div>
   );
 }
 
 export default function Stats() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const section: CSSProperties = {
+    padding: "100px 32px",
+    background: "var(--accent-lighter)",
+  };
+
+  const container: CSSProperties = {
+    maxWidth: "var(--max-width)",
+    margin: "0 auto",
+  };
+
+  const grid: CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gap: "24px",
+  };
+
+  const card: CSSProperties = {
+    textAlign: "center",
+    padding: "36px 20px",
+    borderRadius: "var(--radius)",
+    background: "var(--bg-white)",
+    border: "1px solid var(--border)",
+  };
+
+  const labelStyle: CSSProperties = {
+    fontFamily: "var(--font-heading)",
+    fontSize: "15px",
+    fontWeight: 600,
+    color: "var(--text-primary)",
+    marginTop: "12px",
+    marginBottom: "6px",
+  };
+
+  const desc: CSSProperties = {
+    fontSize: "13px",
+    color: "var(--text-muted)",
+  };
 
   return (
-    <section ref={sectionRef} className="relative py-32 px-6">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple/5 to-transparent" />
-
-      <div className="relative max-w-7xl mx-auto">
-        <motion.div
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={staggerContainer}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-        >
-          {stats.map((stat) => (
-            <motion.div
-              key={stat.label}
-              variants={staggerItem}
-              className="text-center p-8 rounded-2xl border border-dark-border bg-dark-card/30 hover:border-cyan/20 transition-all duration-500"
-            >
-              <AnimatedCounter
-                value={stat.value}
-                suffix={stat.suffix}
-                isInView={isInView}
-              />
-              <div className="mt-4 font-[family-name:var(--font-space-grotesk)] text-lg font-semibold text-foreground">
-                {stat.label}
-              </div>
-              <div className="mt-2 text-sm text-muted">
-                {stat.description}
-              </div>
-            </motion.div>
+    <section style={section}>
+      <div style={container}>
+        <div style={grid} className="stats-grid">
+          {stats.map((s) => (
+            <div key={s.label} style={card}>
+              <Counter value={s.value} suffix={s.suffix} />
+              <div style={labelStyle}>{s.label}</div>
+              <div style={desc}>{s.desc}</div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
+
+      <style jsx global>{`
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 500px) { .stats-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
     </section>
   );
 }

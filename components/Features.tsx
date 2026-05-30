@@ -1,228 +1,358 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { staggerContainer, staggerItem } from "@/lib/animations";
+import { CSSProperties, useRef, useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const features = [
   {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8">
-        <path
-          d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
+    icon: "🔐",
     title: "Identity & Trust Layer",
-    description:
-      "Blockchain-secured identity verification and trust scoring for every participant in your data ecosystem. Zero-knowledge proofs ensure privacy while maintaining accountability.",
+    short: "Identity & Trust",
+    desc: "Blockchain-secured identity verification and trust scoring. Zero-knowledge proofs ensure privacy while maintaining accountability.",
+    highlights: [
+      "Zero-Knowledge Identity Proofs",
+      "Decentralized Trust Scores",
+      "Privacy-First Verification",
+      "Immutable Audit Trail",
+    ],
   },
   {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8">
-        <path
-          d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
+    icon: "⚡",
     title: "Transaction Engine",
-    description:
-      "Smart contract-powered transactions with automated escrow, royalty distribution, and usage-based billing. Every exchange is transparent, auditable, and instant.",
+    short: "Transactions",
+    desc: "Smart contract-powered transactions with automated escrow, royalty distribution, and usage-based billing.",
+    highlights: [
+      "Automated Smart Escrow",
+      "Royalty Distribution",
+      "Usage-Based Billing",
+      "Multi-Currency Support",
+    ],
   },
   {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8">
-        <rect
-          x="3"
-          y="3"
-          width="7"
-          height="7"
-          rx="1"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <rect
-          x="14"
-          y="3"
-          width="7"
-          height="7"
-          rx="1"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <rect
-          x="3"
-          y="14"
-          width="7"
-          height="7"
-          rx="1"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <rect
-          x="14"
-          y="14"
-          width="7"
-          height="7"
-          rx="1"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-      </svg>
-    ),
+    icon: "🧩",
     title: "Marketplace Primitives",
-    description:
-      "Pre-built modules for listings, search, filtering, categories, and data product management. Assemble your marketplace like building blocks — no reinventing the wheel.",
+    short: "Marketplace",
+    desc: "Pre-built modules for listings, search, filtering, and data product management. Assemble your marketplace like building blocks.",
+    highlights: [
+      "Drag & Drop Listings",
+      "Advanced Filtering",
+      "Data Product Catalog",
+      "Modular Architecture",
+    ],
   },
   {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8">
-        <path
-          d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5z"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4z"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M14 15h6m-3-3v6"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
+    icon: "🏷️",
     title: "White-Label Deployment",
-    description:
-      "Full brand customization — your logo, your colors, your domain. Launch a marketplace that looks and feels entirely yours while powered by enterprise infrastructure.",
+    short: "White-Label",
+    desc: "Full brand customization — your logo, colors, domain. Launch a marketplace that looks entirely yours.",
+    highlights: [
+      "Custom Branding & Domain",
+      "Theme Builder",
+      "White-Label APIs",
+      "Partner-Ready Storefronts",
+    ],
   },
   {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8">
-        <path
-          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
+    icon: "🛡️",
     title: "Access Control & Permissions",
-    description:
-      "Granular role-based access for data providers, consumers, administrators, and auditors. Define who sees what, who buys what, and who governs what.",
+    short: "Access Control",
+    desc: "Granular role-based access for providers, consumers, administrators, and auditors.",
+    highlights: [
+      "Role-Based Access (RBAC)",
+      "Provider Dashboards",
+      "Admin & Auditor Views",
+      "API Key Management",
+    ],
   },
   {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8">
-        <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5" />
-        <path
-          d="M21 21l-4.35-4.35"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
+    icon: "🔍",
     title: "Discoverability Engine",
-    description:
-      "AI-powered search, recommendation systems, and data cataloging. Help buyers find exactly the data they need across thousands of listings in milliseconds.",
+    short: "Discoverability",
+    desc: "AI-powered search and recommendation systems. Help buyers find exactly the data they need.",
+    highlights: [
+      "AI-Powered Search",
+      "Smart Recommendations",
+      "Category Intelligence",
+      "Trend Analytics",
+    ],
   },
 ];
 
+function FeatureContent({ feature }: { feature: typeof features[0] }) {
+  return (
+    <motion.div
+      key={feature.title}
+      initial={{ opacity: 0, x: 40 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "48px",
+        alignItems: "center",
+      }}
+      className="features-panel-grid"
+    >
+      {/* Left: info */}
+      <div>
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "52px",
+          height: "52px",
+          borderRadius: "14px",
+          background: "rgba(37, 99, 235, 0.1)",
+          fontSize: "26px",
+          marginBottom: "20px",
+        }}>
+          {feature.icon}
+        </div>
+        <h3 style={{
+          fontFamily: "var(--font-heading)",
+          fontSize: "clamp(22px, 2.5vw, 30px)",
+          fontWeight: 800,
+          color: "var(--text-primary)",
+          marginBottom: "14px",
+          lineHeight: 1.2,
+        }}>
+          {feature.title}
+        </h3>
+        <p style={{
+          fontSize: "15px",
+          lineHeight: 1.75,
+          color: "var(--text-secondary)",
+          maxWidth: "400px",
+          marginBottom: "24px",
+        }}>
+          {feature.desc}
+        </p>
+        <a href="#contact" style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "6px",
+          padding: "10px 24px",
+          borderRadius: "8px",
+          fontSize: "14px",
+          fontWeight: 600,
+          color: "#fff",
+          background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+          boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
+          transition: "all 0.25s",
+        }}
+          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(37, 99, 235, 0.35)"; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(37, 99, 235, 0.25)"; }}
+        >
+          Learn More <span>&rarr;</span>
+        </a>
+      </div>
+
+      {/* Right: highlight cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+        {feature.highlights.map((h, i) => (
+          <motion.div
+            key={h}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.06 }}
+            style={{
+              padding: "20px 18px",
+              borderRadius: "12px",
+              border: "1px solid rgba(37, 99, 235, 0.1)",
+              background: "rgba(37, 99, 235, 0.03)",
+              transition: "all 0.25s",
+              cursor: "default",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(37, 99, 235, 0.07)";
+              e.currentTarget.style.borderColor = "rgba(37, 99, 235, 0.2)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(37, 99, 235, 0.08)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(37, 99, 235, 0.03)";
+              e.currentTarget.style.borderColor = "rgba(37, 99, 235, 0.1)";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            <div style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "8px",
+              background: "rgba(37, 99, 235, 0.1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: "10px",
+              color: "var(--accent)",
+              fontWeight: 700,
+              fontSize: "12px",
+            }}>
+              {`0${i + 1}`}
+            </div>
+            <p style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "13px",
+              fontWeight: 600,
+              color: "var(--text-primary)",
+              lineHeight: 1.4,
+            }}>{h}</p>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Features() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const setRef = useCallback((el: HTMLDivElement | null, i: number) => {
+    triggerRefs.current[i] = el;
+  }, []);
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    triggerRefs.current.forEach((trigger, i) => {
+      if (!trigger) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveIndex(i);
+        },
+        { threshold: 0.3, rootMargin: "-20% 0px -20% 0px" }
+      );
+      observer.observe(trigger);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  const scrollToPanel = (i: number) => {
+    triggerRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 
   return (
-    <section
-      id="features"
-      ref={containerRef}
-      className="relative py-32 px-6 bg-grid"
-    >
-      {/* Gradient overlay at top */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-dark to-transparent" />
+    <section id="features" ref={sectionRef} style={{
+      position: "relative",
+      background: "linear-gradient(180deg, #f8faff 0%, #ffffff 50%, #f8faff 100%)",
+    }}>
+      {/* Sticky header: title + tabs + content card */}
+      <div style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+        paddingBottom: "40px",
+      }}>
+        {/* Top bar */}
+        <div style={{
+          background: "rgba(255, 255, 255, 0.97)",
+          backdropFilter: "blur(12px)",
+          borderBottom: "1px solid var(--border)",
+        }}>
+          <div style={{
+            maxWidth: "var(--max-width)",
+            margin: "0 auto",
+            padding: "24px 32px 0",
+          }}>
+            <div style={{ textAlign: "center", marginBottom: "16px" }}>
+              <h2 style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "clamp(22px, 3vw, 34px)",
+                fontWeight: 800,
+                color: "var(--text-primary)",
+                lineHeight: 1.2,
+              }}>
+                Everything You Need to Build a{" "}
+                <span style={{ color: "var(--accent)" }}>Data Economy</span>
+              </h2>
+            </div>
 
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <motion.div
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={staggerContainer}
-          className="text-center mb-20"
-        >
-          <motion.span
-            variants={staggerItem}
-            className="inline-block px-4 py-1.5 rounded-full text-xs font-medium border border-purple/30 text-purple-light bg-purple/5 tracking-wider uppercase mb-6"
-          >
-            Platform Capabilities
-          </motion.span>
-          <motion.h2
-            variants={staggerItem}
-            className="font-[family-name:var(--font-space-grotesk)] text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
-          >
-            Everything You Need to
-            <br />
-            <span className="gradient-text">Build a Data Economy</span>
-          </motion.h2>
-          <motion.p
-            variants={staggerItem}
-            className="text-muted text-lg max-w-2xl mx-auto"
-          >
-            Six foundational layers that power any data marketplace —
-            from identity to discovery, transactions to governance.
-          </motion.p>
-        </motion.div>
+            {/* Tabs */}
+            <div style={{
+              display: "flex",
+              gap: "0",
+              justifyContent: "center",
+              overflowX: "auto",
+            }} className="features-tabs">
+              {features.map((f, i) => (
+                <button
+                  key={f.title}
+                  onClick={() => scrollToPanel(i)}
+                  style={{
+                    padding: "10px 18px",
+                    fontSize: "13px",
+                    fontWeight: activeIndex === i ? 700 : 500,
+                    color: activeIndex === i ? "var(--accent)" : "var(--text-secondary)",
+                    background: "transparent",
+                    borderBottom: activeIndex === i ? "2px solid var(--accent)" : "2px solid transparent",
+                    transition: "all 0.2s",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                    fontFamily: "var(--font-body)",
+                  }}
+                  onMouseEnter={e => {
+                    if (activeIndex !== i) e.currentTarget.style.color = "var(--text-primary)";
+                  }}
+                  onMouseLeave={e => {
+                    if (activeIndex !== i) e.currentTarget.style.color = "var(--text-secondary)";
+                  }}
+                >
+                  {f.short}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        {/* Feature Grid */}
-        <motion.div
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={staggerContainer}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              variants={staggerItem}
-              className="group relative p-8 rounded-2xl border border-dark-border bg-dark-card/50 hover:border-cyan/30 transition-all duration-500 hover:shadow-lg hover:shadow-cyan/5"
-            >
-              {/* Hover gradient */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan/5 to-purple/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              <div className="relative z-10">
-                <div className="text-cyan mb-5 group-hover:text-purple-light transition-colors duration-300">
-                  {feature.icon}
-                </div>
-                <h3 className="font-[family-name:var(--font-space-grotesk)] text-xl font-semibold mb-3 text-foreground">
-                  {feature.title}
-                </h3>
-                <p className="text-muted text-sm leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-
-              {/* Corner accent */}
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-cyan/10 to-transparent rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              
-              {/* Number */}
-              <div className="absolute bottom-4 right-4 text-6xl font-bold text-dark-border/50 font-[family-name:var(--font-space-grotesk)] group-hover:text-cyan/10 transition-colors">
-                {String(index + 1).padStart(2, "0")}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Content card - bluish tinted */}
+        <div style={{
+          maxWidth: "var(--max-width)",
+          margin: "0 auto",
+          padding: "0 32px",
+        }}>
+          <div style={{
+            marginTop: "32px",
+            padding: "40px 40px",
+            borderRadius: "20px",
+            background: "linear-gradient(135deg, #f0f5ff 0%, #e8f0fe 50%, #f0f4ff 100%)",
+            border: "1px solid rgba(37, 99, 235, 0.1)",
+            boxShadow: "0 4px 24px rgba(37, 99, 235, 0.06), 0 1px 4px rgba(0,0,0,0.03)",
+            minHeight: "380px",
+            display: "flex",
+            alignItems: "center",
+          }}>
+            <AnimatePresence mode="wait">
+              <FeatureContent key={activeIndex} feature={features[activeIndex]} />
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
+
+      {/* Invisible scroll triggers - compact */}
+      <div style={{ position: "relative" }}>
+        {features.map((f, i) => (
+          <div
+            key={f.title}
+            ref={(el) => setRef(el, i)}
+            style={{ height: "60vh" }}
+          />
+        ))}
+      </div>
+
+      <style jsx global>{`
+        .features-tabs::-webkit-scrollbar { display: none; }
+        .features-tabs { -ms-overflow-style: none; scrollbar-width: none; }
+        @media (max-width: 900px) {
+          .features-panel-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+          .features-tabs { justify-content: flex-start !important; padding: 0 12px; }
+        }
+      `}</style>
     </section>
   );
 }
