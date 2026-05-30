@@ -1,7 +1,6 @@
 "use client";
 
-import { CSSProperties, useRef, useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 const features = [
   {
@@ -78,279 +77,297 @@ const features = [
   },
 ];
 
-function FeatureContent({ feature }: { feature: typeof features[0] }) {
-  return (
-    <motion.div
-      key={feature.title}
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -40 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "48px",
-        alignItems: "center",
-      }}
-      className="features-panel-grid"
-    >
-      {/* Left: info */}
-      <div>
-        <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "52px",
-          height: "52px",
-          borderRadius: "14px",
-          background: "rgba(37, 99, 235, 0.1)",
-          fontSize: "26px",
-          marginBottom: "20px",
-        }}>
-          {feature.icon}
-        </div>
-        <h3 style={{
-          fontFamily: "var(--font-heading)",
-          fontSize: "clamp(22px, 2.5vw, 30px)",
-          fontWeight: 800,
-          color: "var(--text-primary)",
-          marginBottom: "14px",
-          lineHeight: 1.2,
-        }}>
-          {feature.title}
-        </h3>
-        <p style={{
-          fontSize: "15px",
-          lineHeight: 1.75,
-          color: "var(--text-secondary)",
-          maxWidth: "400px",
-          marginBottom: "24px",
-        }}>
-          {feature.desc}
-        </p>
-        <a href="#contact" style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "6px",
-          padding: "10px 24px",
-          borderRadius: "8px",
-          fontSize: "14px",
-          fontWeight: 600,
-          color: "#fff",
-          background: "linear-gradient(135deg, #2563eb, #4f46e5)",
-          boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
-          transition: "all 0.25s",
-        }}
-          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(37, 99, 235, 0.35)"; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(37, 99, 235, 0.25)"; }}
-        >
-          Learn More <span>&rarr;</span>
-        </a>
-      </div>
-
-      {/* Right: highlight cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-        {feature.highlights.map((h, i) => (
-          <motion.div
-            key={h}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.06 }}
-            style={{
-              padding: "20px 18px",
-              borderRadius: "12px",
-              border: "1px solid rgba(37, 99, 235, 0.1)",
-              background: "rgba(37, 99, 235, 0.03)",
-              transition: "all 0.25s",
-              cursor: "default",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = "rgba(37, 99, 235, 0.07)";
-              e.currentTarget.style.borderColor = "rgba(37, 99, 235, 0.2)";
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 4px 16px rgba(37, 99, 235, 0.08)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(37, 99, 235, 0.03)";
-              e.currentTarget.style.borderColor = "rgba(37, 99, 235, 0.1)";
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          >
-            <div style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "8px",
-              background: "rgba(37, 99, 235, 0.1)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: "10px",
-              color: "var(--accent)",
-              fontWeight: 700,
-              fontSize: "12px",
-            }}>
-              {`0${i + 1}`}
-            </div>
-            <p style={{
-              fontFamily: "var(--font-heading)",
-              fontSize: "13px",
-              fontWeight: 600,
-              color: "var(--text-primary)",
-              lineHeight: 1.4,
-            }}>{h}</p>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
+const NAVBAR_H = 68;
+const HEADER_H = 90;
+const STICKY_TOP = NAVBAR_H + HEADER_H;
 
 export default function Features() {
-  const sectionRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const cardEls = useRef<(HTMLDivElement | null)[]>([]);
 
-  const setRef = useCallback((el: HTMLDivElement | null, i: number) => {
-    triggerRefs.current[i] = el;
+  const setCardRef = useCallback((el: HTMLDivElement | null, i: number) => {
+    cardEls.current[i] = el;
   }, []);
 
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-
-    triggerRefs.current.forEach((trigger, i) => {
-      if (!trigger) return;
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveIndex(i);
-        },
-        { threshold: 0.3, rootMargin: "-20% 0px -20% 0px" }
-      );
-      observer.observe(trigger);
-      observers.push(observer);
-    });
-
-    return () => observers.forEach((o) => o.disconnect());
+    const handleScroll = () => {
+      let newActive = 0;
+      cardEls.current.forEach((el, i) => {
+        if (!el) return;
+        if (el.getBoundingClientRect().top <= STICKY_TOP + 20) newActive = i;
+      });
+      setActiveIndex(newActive);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToPanel = (i: number) => {
-    triggerRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  const scrollToCard = (i: number) => {
+    cardEls.current[i]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
     <section id="features" ref={sectionRef} style={{
       position: "relative",
-      background: "linear-gradient(180deg, #f8faff 0%, #ffffff 50%, #f8faff 100%)",
+      background: "linear-gradient(180deg, #f8faff 0%, #ffffff 30%, #f8faff 100%)",
     }}>
-      {/* Sticky header: title + tabs + content card */}
+      {/* Big intro heading */}
+      <div style={{
+        maxWidth: "var(--max-width)",
+        margin: "0 auto",
+        padding: "120px 32px 60px",
+      }}>
+        <h2 style={{
+          fontFamily: "var(--font-heading)",
+          fontSize: "clamp(32px, 5vw, 52px)",
+          fontWeight: 800,
+          lineHeight: 1.12,
+          color: "var(--text-primary)",
+          maxWidth: "750px",
+        }}>
+          The all in one{" "}
+          <span style={{ color: "var(--accent)" }}>marketplace infrastructure</span>{" "}
+          you&apos;ve been looking for
+        </h2>
+        <p style={{
+          marginTop: "20px",
+          fontSize: "15px",
+          color: "var(--text-secondary)",
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+        }}>
+          With Ethical Xchange, you can:
+          <span style={{ width: "1px", height: "20px", background: "var(--border-dark)", display: "inline-block" }} />
+        </p>
+      </div>
+
+      {/* Sticky header - sits below the fixed navbar */}
       <div style={{
         position: "sticky",
-        top: 0,
-        zIndex: 100,
-        paddingBottom: "40px",
+        top: `${NAVBAR_H}px`,
+        zIndex: 500,
+        background: "rgba(255, 255, 255, 0.97)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid var(--border)",
+        height: `${HEADER_H}px`,
+        display: "flex",
+        alignItems: "center",
       }}>
-        {/* Top bar */}
-        <div style={{
-          background: "rgba(255, 255, 255, 0.97)",
-          backdropFilter: "blur(12px)",
-          borderBottom: "1px solid var(--border)",
-        }}>
-          <div style={{
-            maxWidth: "var(--max-width)",
-            margin: "0 auto",
-            padding: "24px 32px 0",
-          }}>
-            <div style={{ textAlign: "center", marginBottom: "16px" }}>
-              <h2 style={{
-                fontFamily: "var(--font-heading)",
-                fontSize: "clamp(22px, 3vw, 34px)",
-                fontWeight: 800,
-                color: "var(--text-primary)",
-                lineHeight: 1.2,
-              }}>
-                Everything You Need to Build a{" "}
-                <span style={{ color: "var(--accent)" }}>Data Economy</span>
-              </h2>
-            </div>
-
-            {/* Tabs */}
-            <div style={{
-              display: "flex",
-              gap: "0",
-              justifyContent: "center",
-              overflowX: "auto",
-            }} className="features-tabs">
-              {features.map((f, i) => (
-                <button
-                  key={f.title}
-                  onClick={() => scrollToPanel(i)}
-                  style={{
-                    padding: "10px 18px",
-                    fontSize: "13px",
-                    fontWeight: activeIndex === i ? 700 : 500,
-                    color: activeIndex === i ? "var(--accent)" : "var(--text-secondary)",
-                    background: "transparent",
-                    borderBottom: activeIndex === i ? "2px solid var(--accent)" : "2px solid transparent",
-                    transition: "all 0.2s",
-                    whiteSpace: "nowrap",
-                    cursor: "pointer",
-                    fontFamily: "var(--font-body)",
-                  }}
-                  onMouseEnter={e => {
-                    if (activeIndex !== i) e.currentTarget.style.color = "var(--text-primary)";
-                  }}
-                  onMouseLeave={e => {
-                    if (activeIndex !== i) e.currentTarget.style.color = "var(--text-secondary)";
-                  }}
-                >
-                  {f.short}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Content card - bluish tinted */}
         <div style={{
           maxWidth: "var(--max-width)",
           margin: "0 auto",
           padding: "0 32px",
-        }}>
-          <div style={{
-            marginTop: "32px",
-            padding: "40px 40px",
-            borderRadius: "20px",
-            background: "linear-gradient(135deg, #f0f5ff 0%, #e8f0fe 50%, #f0f4ff 100%)",
-            border: "1px solid rgba(37, 99, 235, 0.1)",
-            boxShadow: "0 4px 24px rgba(37, 99, 235, 0.06), 0 1px 4px rgba(0,0,0,0.03)",
-            minHeight: "380px",
-            display: "flex",
-            alignItems: "center",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "32px",
+        }} className="features-header-row">
+          <h2 style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "clamp(18px, 2.5vw, 26px)",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            lineHeight: 1.2,
+            whiteSpace: "nowrap",
+            flexShrink: 0,
           }}>
-            <AnimatePresence mode="wait">
-              <FeatureContent key={activeIndex} feature={features[activeIndex]} />
-            </AnimatePresence>
+            Build a <span style={{ color: "var(--accent)" }}>Data Economy</span>
+          </h2>
+
+          <div style={{
+            display: "flex",
+            gap: "0",
+            overflowX: "auto",
+          }} className="features-tabs">
+            {features.map((f, i) => (
+              <button
+                key={f.title}
+                onClick={() => scrollToCard(i)}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "13px",
+                  fontWeight: activeIndex === i ? 700 : 500,
+                  color: activeIndex === i ? "var(--accent)" : "var(--text-secondary)",
+                  background: "transparent",
+                  borderBottom: activeIndex === i ? "2px solid var(--accent)" : "2px solid transparent",
+                  transition: "all 0.2s",
+                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                  fontFamily: "var(--font-body)",
+                }}
+                onMouseEnter={e => { if (activeIndex !== i) e.currentTarget.style.color = "var(--text-primary)"; }}
+                onMouseLeave={e => { if (activeIndex !== i) e.currentTarget.style.color = "var(--text-secondary)"; }}
+              >
+                {f.short}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Invisible scroll triggers - compact */}
-      <div style={{ position: "relative" }}>
-        {features.map((f, i) => (
-          <div
-            key={f.title}
-            ref={(el) => setRef(el, i)}
-            style={{ height: "60vh" }}
-          />
-        ))}
+      {/* 
+        All cards in ONE container so sticky stacking works.
+        Each card: position sticky, same top, increasing z-index.
+        margin-bottom on each creates scroll space for the next card to arrive.
+      */}
+      <div style={{ padding: "24px 0 30vh" }}>
+        {features.map((f, i) => {
+          const isLast = i === features.length - 1;
+          return (
+            <div
+              key={f.title}
+              ref={(el) => setCardRef(el, i)}
+              style={{
+                position: "sticky",
+                top: `${STICKY_TOP + 8}px`,
+                zIndex: 20 + i,
+                marginBottom: "55vh",
+              }}
+            >
+              <div style={{
+                maxWidth: "var(--max-width)",
+                margin: "0 auto",
+                padding: "0 32px",
+              }}>
+                <div style={{
+                  padding: "32px 36px",
+                  borderRadius: "20px",
+                  background: "linear-gradient(135deg, #f0f5ff 0%, #e8f0fe 40%, #f0f4ff 100%)",
+                  border: "1px solid rgba(37, 99, 235, 0.1)",
+                  boxShadow: "0 8px 40px rgba(37, 99, 235, 0.08), 0 2px 6px rgba(0,0,0,0.04)",
+                }}>
+                  {/* Card header */}
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    marginBottom: "20px",
+                  }}>
+                    <span style={{ fontSize: "24px" }}>{f.icon}</span>
+                    <h3 style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "clamp(18px, 2.2vw, 24px)",
+                      fontWeight: 800,
+                      color: "var(--text-primary)",
+                      lineHeight: 1.2,
+                    }}>
+                      {f.title}
+                    </h3>
+                  </div>
+
+                  {/* Highlight sub-cards */}
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: "14px",
+                    marginBottom: "20px",
+                  }} className="feature-card-grid">
+                    {f.highlights.map((h, hi) => (
+                      <div
+                        key={h}
+                        style={{
+                          padding: "22px 18px",
+                          borderRadius: "14px",
+                          background: "#ffffff",
+                          border: "1px solid rgba(226, 232, 240, 0.8)",
+                          transition: "all 0.25s",
+                          cursor: "default",
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.borderColor = "rgba(37, 99, 235, 0.25)";
+                          e.currentTarget.style.transform = "translateY(-3px)";
+                          e.currentTarget.style.boxShadow = "0 6px 20px rgba(37, 99, 235, 0.1)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.borderColor = "rgba(226, 232, 240, 0.8)";
+                          e.currentTarget.style.transform = "translateY(0)";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      >
+                        <div style={{
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "8px",
+                          background: "rgba(37, 99, 235, 0.08)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: "12px",
+                          color: "var(--accent)",
+                          fontWeight: 700,
+                          fontSize: "13px",
+                        }}>
+                          {`0${hi + 1}`}
+                        </div>
+                        <p style={{
+                          fontFamily: "var(--font-heading)",
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "var(--text-primary)",
+                          lineHeight: 1.4,
+                        }}>{h}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingTop: "18px",
+                    borderTop: "1px solid rgba(37, 99, 235, 0.08)",
+                    gap: "20px",
+                  }} className="feature-card-footer">
+                    <p style={{
+                      fontSize: "14px",
+                      lineHeight: 1.6,
+                      color: "var(--text-secondary)",
+                      flex: 1,
+                    }}>{f.desc}</p>
+                    <a href="#contact" style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: "10px 22px",
+                      borderRadius: "8px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: "#fff",
+                      background: "linear-gradient(135deg, #2563eb, #4f46e5)",
+                      boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
+                      transition: "all 0.25s",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                    }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(37, 99, 235, 0.35)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(37, 99, 235, 0.25)"; }}
+                    >
+                      Learn More &rarr;
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <style jsx global>{`
         .features-tabs::-webkit-scrollbar { display: none; }
         .features-tabs { -ms-overflow-style: none; scrollbar-width: none; }
+        @media (max-width: 1000px) {
+          .features-header-row { flex-direction: column !important; gap: 8px !important; align-items: flex-start !important; }
+        }
         @media (max-width: 900px) {
-          .features-panel-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
-          .features-tabs { justify-content: flex-start !important; padding: 0 12px; }
+          .feature-card-grid { grid-template-columns: 1fr 1fr !important; }
+          .feature-card-footer { flex-direction: column !important; align-items: flex-start !important; }
+        }
+        @media (max-width: 560px) {
+          .feature-card-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </section>

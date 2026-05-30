@@ -25,7 +25,10 @@ const steps = [
 
 export default function HowItWorks() {
   const section: CSSProperties = {
-    padding: "120px 32px",
+    padding: "120px 32px 120px",
+    marginTop: "-80vh",
+    position: "relative" as const,
+    zIndex: 50,
     background: "var(--bg-light)",
   };
 
