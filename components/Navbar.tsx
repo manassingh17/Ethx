@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, CSSProperties } from "react";
+import BrandLogo from "@/components/BrandLogo";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -21,52 +22,26 @@ export default function Navbar() {
 
   const nav: CSSProperties = {
     position: "fixed",
-    top: 0,
+    top: "14px",
     left: 0,
     right: 0,
     zIndex: 1000,
     transition: "all 0.3s ease",
-    background: scrolled ? "rgba(255,255,255,0.97)" : "transparent",
-    backdropFilter: scrolled ? "blur(16px)" : "none",
-    borderBottom: scrolled ? "1px solid var(--border)" : "none",
-    boxShadow: scrolled ? "var(--shadow-sm)" : "none",
   };
 
   const container: CSSProperties = {
     maxWidth: "var(--max-width)",
     margin: "0 auto",
-    padding: "0 32px",
+    padding: "0 22px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     height: "68px",
-  };
-
-  const logo: CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  };
-
-  const logoIcon: CSSProperties = {
-    width: "34px",
-    height: "34px",
-    borderRadius: "8px",
-    background: "linear-gradient(135deg, #2563eb, #4f46e5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: 800,
-    fontSize: "13px",
-    color: "#fff",
-  };
-
-  const logoText: CSSProperties = {
-    fontFamily: "var(--font-heading)",
-    fontSize: "17px",
-    fontWeight: 700,
-    color: scrolled ? "var(--text-primary)" : "#ffffff",
-    transition: "color 0.3s",
+    borderRadius: "9999px",
+    background: scrolled ? "rgba(255,255,255,0.82)" : "transparent",
+    backdropFilter: scrolled ? "blur(14px)" : "none",
+    border: scrolled ? "1px solid rgba(148,163,184,0.22)" : "1px solid transparent",
+    boxShadow: scrolled ? "0 10px 30px rgba(15, 23, 42, 0.1)" : "none",
   };
 
   const links: CSSProperties = {
@@ -78,7 +53,7 @@ export default function Navbar() {
   const link: CSSProperties = {
     fontSize: "14px",
     fontWeight: 500,
-    color: scrolled ? "var(--text-secondary)" : "rgba(203, 213, 225, 0.85)",
+    color: scrolled ? "var(--text-secondary)" : "rgba(203, 213, 225, 0.9)",
     transition: "color 0.2s",
   };
 
@@ -106,16 +81,18 @@ export default function Navbar() {
   return (
     <nav style={nav}>
       <div style={container}>
-        <a href="#" style={logo}>
-          <div style={logoIcon}>EX</div>
-          <span style={logoText}>Ethical Xchange</span>
+        <a href="#" style={{ display: "flex", alignItems: "center" }}>
+          <BrandLogo
+            size={34}
+            textColor={scrolled ? "var(--text-primary)" : "#ffffff"}
+          />
         </a>
 
         <div style={links} className="hide-mobile">
           {navLinks.map((l) => (
             <a key={l.label} href={l.href} style={link}
               onMouseEnter={e => (e.currentTarget.style.color = scrolled ? "var(--accent)" : "#ffffff")}
-              onMouseLeave={e => (e.currentTarget.style.color = scrolled ? "var(--text-secondary)" : "rgba(203, 213, 225, 0.85)")}
+              onMouseLeave={e => (e.currentTarget.style.color = scrolled ? "var(--text-secondary)" : "rgba(203, 213, 225, 0.9)")}
             >{l.label}</a>
           ))}
           <a href="#contact" style={cta}
@@ -137,10 +114,10 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div style={{ background: "rgba(10, 22, 40, 0.95)", backdropFilter: "blur(16px)", borderTop: "1px solid rgba(59,130,246,0.15)", padding: "20px 32px" }} className="show-mobile">
+        <div style={{ maxWidth: "var(--max-width)", margin: "10px auto 0", background: "rgba(255,255,255,0.97)", backdropFilter: "blur(16px)", border: "1px solid rgba(148,163,184,0.25)", borderRadius: "20px", boxShadow: "0 14px 30px rgba(15,23,42,0.15)", padding: "20px 24px" }} className="show-mobile">
           {navLinks.map((l) => (
             <a key={l.label} href={l.href} onClick={() => setMobileOpen(false)}
-              style={{ display: "block", padding: "12px 0", fontSize: "15px", color: "rgba(203, 213, 225, 0.85)" }}
+              style={{ display: "block", padding: "12px 0", fontSize: "15px", color: "var(--text-secondary)" }}
             >{l.label}</a>
           ))}
           <a href="#contact" onClick={() => setMobileOpen(false)}

@@ -113,6 +113,21 @@ export default function WhyChoose() {
       {/* Subtle decorative orbs */}
       <div style={{ position: "absolute", right: "5%", top: "10%", width: "300px", height: "300px", borderRadius: "50%", background: "rgba(37, 99, 235, 0.04)", filter: "blur(80px)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", left: "8%", bottom: "25%", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(99, 102, 241, 0.03)", filter: "blur(60px)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: "12%", left: "1.5%", width: "170px", height: "130px", backgroundImage: "url('/images/decor-dot-grid.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.28, mixBlendMode: "multiply", pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", top: "8%", left: "32%", width: "130px", height: "90px", backgroundImage: "url('/images/decor-dot-grid.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.18, pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", top: "6%", right: "6%", width: "170px", height: "120px", backgroundImage: "url('/images/decor-dot-grid.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.2, pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", top: "42%", right: "8%", width: "120px", height: "120px", backgroundImage: "url('/images/decor-plus.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.3, pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", top: "24%", right: "2%", width: "95px", height: "95px", backgroundImage: "url('/images/decor-plus.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.2, transform: "rotate(-16deg)", pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "10%", right: "1%", width: "210px", height: "210px", backgroundImage: "url('/images/decor-rings.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.22, transform: "rotate(8deg)", pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "36%", right: "5%", width: "155px", height: "155px", backgroundImage: "url('/images/decor-rings.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.14, pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "24%", left: "42%", width: "120px", height: "90px", backgroundImage: "url('/images/feature-section1-dottedrows.png')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.2, pointerEvents: "none", zIndex: 1 }} />
+      {/* Bottom left */}
+      <div style={{ position: "absolute", bottom: "8%", left: "2%", width: "150px", height: "115px", backgroundImage: "url('/images/decor-dot-grid.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.24, mixBlendMode: "multiply", pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "14%", left: "12%", width: "100px", height: "100px", backgroundImage: "url('/images/decor-plus.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.22, transform: "rotate(12deg)", pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "4%", left: "6%", width: "130px", height: "95px", backgroundImage: "url('/images/feature-section1-dottedrows.png')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.18, pointerEvents: "none", zIndex: 1 }} />
+      {/* Bottom center */}
+      <div style={{ position: "absolute", bottom: "6%", left: "38%", width: "140px", height: "105px", backgroundImage: "url('/images/decor-dot-grid.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.16, pointerEvents: "none", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "12%", left: "48%", width: "180px", height: "140px", backgroundImage: "url('/images/decor-rings.svg')", backgroundRepeat: "no-repeat", backgroundSize: "contain", opacity: 0.12, pointerEvents: "none", zIndex: 1 }} />
 
       <div style={{
         maxWidth: "var(--max-width)",
@@ -122,6 +137,8 @@ export default function WhyChoose() {
         gridTemplateColumns: "1fr 1fr",
         gap: "80px",
         minHeight: "180vh",
+        position: "relative",
+        zIndex: 2,
       }} className="why-choose-grid">
 
         {/* Left column - sticky, instantly visible */}
